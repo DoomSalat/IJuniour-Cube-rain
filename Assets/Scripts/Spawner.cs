@@ -64,14 +64,14 @@ public class Spawner : MonoBehaviour
 
 	private Vector3 GetRandomPositionInBox()
 	{
-		Vector3 center = _positionBox.transform.TransformPoint(_positionBox.center);
-		Vector3 size = _positionBox.size;
+		Vector3 randomLocalPosition = new Vector3(
+			Random.Range(-0.5f, 0.5f),
+			Random.Range(-0.5f, 0.5f),
+			Random.Range(-0.5f, 0.5f)
+		);
 
-		float randomX = Random.Range(-size.x / 2, size.x / 2);
-		float randomY = Random.Range(-size.y / 2, size.y / 2);
-		float randomZ = Random.Range(-size.z / 2, size.z / 2);
+		randomLocalPosition = Vector3.Scale(randomLocalPosition, _positionBox.size);
 
-		Vector3 localOffset = new Vector3(randomX, randomY, randomZ);
-		return center + _positionBox.transform.TransformDirection(localOffset);
+		return _positionBox.transform.TransformPoint(_positionBox.center + randomLocalPosition);
 	}
 }

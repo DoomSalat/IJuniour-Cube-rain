@@ -64,10 +64,12 @@ public class Spawner : MonoBehaviour
 
 	private Vector3 GetRandomPositionInBox()
 	{
+		const float halfSize = 0.5f;
+
 		Vector3 randomLocalPosition = new Vector3(
-			Random.Range(-0.5f, 0.5f),
-			Random.Range(-0.5f, 0.5f),
-			Random.Range(-0.5f, 0.5f)
+			Random.Range(-halfSize, halfSize),
+			Random.Range(-halfSize, halfSize),
+			Random.Range(-halfSize, halfSize)
 		);
 
 		randomLocalPosition = Vector3.Scale(randomLocalPosition, _positionBox.size);

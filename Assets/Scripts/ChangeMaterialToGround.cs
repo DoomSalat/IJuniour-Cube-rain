@@ -5,8 +5,6 @@ public class ChangeMaterialToGround : MonoBehaviour
 {
 	[SerializeField] private Renderer _renderer;
 	[SerializeField] private Material _defaultMaterial;
-	[Space]
-	[SerializeField] private string _changeTag = "Ground";
 
 	private GameObject _currentTuch;
 
@@ -18,20 +16,13 @@ public class ChangeMaterialToGround : MonoBehaviour
 
 	private void OnCollisionEnter(Collision collision)
 	{
-		if (collision.gameObject.tag != _changeTag)
+		if (collision.gameObject == _currentTuch)
 			return;
 
-		GameObject collidedObject = collision.gameObject;
-
-		if (collidedObject != _currentTuch)
+		if (collision.gameObject.TryGetComponent(out Ground ground))
 		{
-			Renderer groundRenderer = collidedObject.GetComponent<Renderer>();
-
-			if (groundRenderer != null)
-			{
-				_renderer.material = groundRenderer.material;
-				_currentTuch = collidedObject;
-			}
+			_renderer.material = ground.GetMaterial();
+			_currentTuch = collision.gameObject;
 		}
 	}
 }

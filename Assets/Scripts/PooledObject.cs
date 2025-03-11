@@ -8,6 +8,11 @@ public class PooledObject : MonoBehaviour
 
 	private bool _isCollide;
 
+	private void Awake()
+	{
+		_selfRigidbody = GetComponent<Rigidbody>();
+	}
+
 	public void Initializate(Spawner spawner)
 	{
 		_spawner = spawner;
@@ -16,9 +21,6 @@ public class PooledObject : MonoBehaviour
 	private void OnEnable()
 	{
 		_isCollide = false;
-
-		if (_selfRigidbody == null)
-			_selfRigidbody = GetComponent<Rigidbody>();
 
 		_selfRigidbody.linearVelocity = Vector3.zero;
 		_selfRigidbody.angularVelocity = Vector3.zero;

@@ -13,11 +13,6 @@ public class PooledObject : MonoBehaviour
 		_selfRigidbody = GetComponent<Rigidbody>();
 	}
 
-	public void Initializate(Spawner spawner)
-	{
-		_spawner = spawner;
-	}
-
 	private void OnEnable()
 	{
 		_isCollide = false;
@@ -33,6 +28,11 @@ public class PooledObject : MonoBehaviour
 			return;
 
 		_isCollide = true;
-		_spawner.TimerReturn(gameObject);
+		_spawner.StartTimerReturn(gameObject);
+	}
+
+	public void Initializate(Spawner spawner)
+	{
+		_spawner = spawner;
 	}
 }

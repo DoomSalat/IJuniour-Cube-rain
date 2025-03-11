@@ -5,7 +5,7 @@ using UnityEngine.Pool;
 [RequireComponent(typeof(BoxCollider))]
 public class Spawner : MonoBehaviour
 {
-	[SerializeField] private GameObject _prefab;
+	[SerializeField] private PooledObject _prefab;
 	[SerializeField] private BoxCollider _positionBox;
 	[Space]
 	[SerializeField][Min(0)] private float _rateTime = 2;
@@ -16,31 +16,48 @@ public class Spawner : MonoBehaviour
 
 	private void Start()
 	{
-		_pool = new ObjectPool<GameObject>(
-			createFunc: () =>
-			{
-				GameObject obj = Instantiate(_prefab);
-				PooledObject pooledObject = obj.AddComponent<PooledObject>();
-				pooledObject.Initializate(this);
-				return pooledObject.gameObject;
-			},
-			actionOnGet: (obj) =>
-			{
-				obj.transform.position = GetRandomPositionInBox();
-				obj.SetActive(true);
-			},
-			actionOnRelease: (obj) => obj.SetActive(false),
-			actionOnDestroy: (obj) => Destroy(obj),
-			maxSize: _poolMaxSize
-		);
-
+		InitializePool();
 		StartCoroutine(SpawnRate());
 	}
 
-	public void TimerReturn(GameObject poolObj)
+	public void StartTimerReturn(GameObject poolObj)
 	{
 		int liveTime = Random.Range(_minMaxLiveTime.x, _minMaxLiveTime.y);
 		StartCoroutine(ReturnToPoolAfterTime(poolObj, liveTime));
+	}
+
+	private void InitializePool()
+	{
+		_pool = new ObjectPool<GameObject>(
+			createFunc: CreatePooledObject,
+			actionOnGet: OnGetFromPool,
+			actionOnRelease: OnReleaseToPool,
+			actionOnDestroy: OnDestroyPooledObject,
+			maxSize: _poolMaxSize
+		);
+	}
+
+	private GameObject CreatePooledObject()
+	{
+		PooledObject pooledObject = Instantiate(_prefab);
+		pooledObject.Initializate(this);
+		return pooledObject.gameObject;
+	}
+
+	private void OnGetFromPool(GameObject obj)
+	{
+		obj.transform.position = GetRandomPositionInBox();
+		obj.SetActive(true);
+	}
+
+	private void OnReleaseToPool(GameObject obj)
+	{
+		obj.SetActive(false);
+	}
+
+	private void OnDestroyPooledObject(GameObject obj)
+	{
+		Destroy(obj);
 	}
 
 	private IEnumerator SpawnRate()

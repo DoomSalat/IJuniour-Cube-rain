@@ -1,7 +1,7 @@
 using UnityEngine;
 
 [RequireComponent(typeof(Collider), typeof(Rigidbody))]
-public class Tucher : MonoBehaviour
+public class FirstTouchDetector : MonoBehaviour
 {
 	private Rigidbody _rigidbody;
 	private bool _isCollide;
@@ -20,13 +20,6 @@ public class Tucher : MonoBehaviour
 		ResetVelocity();
 	}
 
-	private void ResetVelocity()
-	{
-		_rigidbody.linearVelocity = Vector3.zero;
-		_rigidbody.angularVelocity = Vector3.zero;
-		transform.rotation = Quaternion.identity;
-	}
-
 	private void OnCollisionEnter(Collision collision)
 	{
 		if (_isCollide)
@@ -34,5 +27,12 @@ public class Tucher : MonoBehaviour
 
 		_isCollide = true;
 		Tuched?.Invoke(collision);
+	}
+
+	private void ResetVelocity()
+	{
+		_rigidbody.linearVelocity = Vector3.zero;
+		_rigidbody.angularVelocity = Vector3.zero;
+		transform.rotation = Quaternion.identity;
 	}
 }

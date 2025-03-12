@@ -1,15 +1,15 @@
 using UnityEngine;
 
-[RequireComponent(typeof(Tucher))]
+[RequireComponent(typeof(FirstTouchDetector))]
 public class PooledObject : MonoBehaviour
 {
-	private Tucher _tucher;
+	private FirstTouchDetector _tucher;
 
 	public event System.Action<PooledObject> TuchedReturn;
 
 	private void Awake()
 	{
-		_tucher = GetComponent<Tucher>();
+		_tucher = GetComponent<FirstTouchDetector>();
 	}
 
 	private void OnEnable()

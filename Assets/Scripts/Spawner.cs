@@ -43,8 +43,7 @@ public class Spawner : MonoBehaviour
 
 	private PooledObject CreatePooledObject()
 	{
-		PooledObject pooledObject = Instantiate(_prefab);
-		return pooledObject;
+		return Instantiate(_prefab);
 	}
 
 	private void OnGetFromPool(PooledObject poolObj)
@@ -63,7 +62,7 @@ public class Spawner : MonoBehaviour
 	private void OnDestroyPooledObject(PooledObject poolObj)
 	{
 		poolObj.TuchedReturn -= OnPoolTuch;
-		Destroy(poolObj);
+		Destroy(poolObj.gameObject);
 	}
 
 	private IEnumerator SpawnRate()
@@ -87,12 +86,12 @@ public class Spawner : MonoBehaviour
 
 	private Vector3 GetRandomPositionInBox()
 	{
-		const float halfSize = 0.5f;
+		const float HalfSize = 0.5f;
 
 		Vector3 randomLocalPosition = new Vector3(
-			Random.Range(-halfSize, halfSize),
-			Random.Range(-halfSize, halfSize),
-			Random.Range(-halfSize, halfSize)
+			Random.Range(-HalfSize, HalfSize),
+			Random.Range(-HalfSize, HalfSize),
+			Random.Range(-HalfSize, HalfSize)
 		);
 
 		randomLocalPosition = Vector3.Scale(randomLocalPosition, _positionBox.size);

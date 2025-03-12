@@ -1,16 +1,16 @@
 using UnityEngine;
 
-[RequireComponent(typeof(Tucher), typeof(Renderer))]
+[RequireComponent(typeof(FirstTouchDetector), typeof(Renderer))]
 public class MaterialChanger : MonoBehaviour
 {
 	[SerializeField] private Material _defaultMaterial;
 
-	private Tucher _tucher;
+	private FirstTouchDetector _tucher;
 	private Renderer _renderer;
 
 	private void Awake()
 	{
-		_tucher = GetComponent<Tucher>();
+		_tucher = GetComponent<FirstTouchDetector>();
 		_renderer = GetComponent<Renderer>();
 	}
 

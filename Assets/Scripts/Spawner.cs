@@ -12,15 +12,19 @@ public class Spawner : MonoBehaviour
 	[SerializeField] private Vector2Int _minMaxLiveTime = new Vector2Int(2, 5);
 	[SerializeField][Min(1)] private int _poolMaxSize = 10;
 
-	private ObjectPool<GameObject> _pool;
+	private ObjectPool<PooledObject> _pool;
+
+	private void Awake()
+	{
+		InitializePool();
+	}
 
 	private void Start()
 	{
-		InitializePool();
 		StartCoroutine(SpawnRate());
 	}
 
-	public void StartTimerReturn(GameObject poolObj)
+	public void OnPoolTuch(PooledObject poolObj)
 	{
 		int liveTime = Random.Range(_minMaxLiveTime.x, _minMaxLiveTime.y);
 		StartCoroutine(ReturnToPoolAfterTime(poolObj, liveTime));
@@ -28,7 +32,7 @@ public class Spawner : MonoBehaviour
 
 	private void InitializePool()
 	{
-		_pool = new ObjectPool<GameObject>(
+		_pool = new ObjectPool<PooledObject>(
 			createFunc: CreatePooledObject,
 			actionOnGet: OnGetFromPool,
 			actionOnRelease: OnReleaseToPool,
@@ -37,27 +41,29 @@ public class Spawner : MonoBehaviour
 		);
 	}
 
-	private GameObject CreatePooledObject()
+	private PooledObject CreatePooledObject()
 	{
 		PooledObject pooledObject = Instantiate(_prefab);
-		pooledObject.Initializate(this);
-		return pooledObject.gameObject;
+		return pooledObject;
 	}
 
-	private void OnGetFromPool(GameObject obj)
+	private void OnGetFromPool(PooledObject poolObj)
 	{
-		obj.transform.position = GetRandomPositionInBox();
-		obj.SetActive(true);
+		poolObj.transform.position = GetRandomPositionInBox();
+		poolObj.Tuched += OnPoolTuch;
+		poolObj.gameObject.SetActive(true);
 	}
 
-	private void OnReleaseToPool(GameObject obj)
+	private void OnReleaseToPool(PooledObject poolObj)
 	{
-		obj.SetActive(false);
+		poolObj.Tuched -= OnPoolTuch;
+		poolObj.gameObject.SetActive(false);
 	}
 
-	private void OnDestroyPooledObject(GameObject obj)
+	private void OnDestroyPooledObject(PooledObject poolObj)
 	{
-		Destroy(obj);
+		poolObj.Tuched -= OnPoolTuch;
+		Destroy(poolObj);
 	}
 
 	private IEnumerator SpawnRate()
@@ -72,11 +78,11 @@ public class Spawner : MonoBehaviour
 		}
 	}
 
-	private IEnumerator ReturnToPoolAfterTime(GameObject obj, float time)
+	private IEnumerator ReturnToPoolAfterTime(PooledObject poolObj, float time)
 	{
 		yield return new WaitForSeconds(time);
 
-		_pool.Release(obj);
+		_pool.Release(poolObj);
 	}
 
 	private Vector3 GetRandomPositionInBox()

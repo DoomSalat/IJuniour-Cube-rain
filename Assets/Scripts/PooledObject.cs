@@ -4,9 +4,9 @@ using UnityEngine;
 public class PooledObject : MonoBehaviour
 {
 	private Rigidbody _selfRigidbody;
-	private Spawner _spawner;
-
 	private bool _isCollide;
+
+	public event System.Action<PooledObject> Tuched;
 
 	private void Awake()
 	{
@@ -28,11 +28,6 @@ public class PooledObject : MonoBehaviour
 			return;
 
 		_isCollide = true;
-		_spawner.StartTimerReturn(gameObject);
-	}
-
-	public void Initializate(Spawner spawner)
-	{
-		_spawner = spawner;
+		Tuched?.Invoke(this);
 	}
 }

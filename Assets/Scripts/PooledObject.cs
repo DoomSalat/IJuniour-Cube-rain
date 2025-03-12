@@ -1,33 +1,30 @@
 using UnityEngine;
 
-[RequireComponent(typeof(Collider), typeof(Rigidbody))]
+[RequireComponent(typeof(Tucher))]
 public class PooledObject : MonoBehaviour
 {
-	private Rigidbody _selfRigidbody;
-	private bool _isCollide;
+	private Tucher _tucher;
 
-	public event System.Action<PooledObject> Tuched;
+	public event System.Action<PooledObject> TuchedReturn;
 
 	private void Awake()
 	{
-		_selfRigidbody = GetComponent<Rigidbody>();
+		_tucher = GetComponent<Tucher>();
 	}
 
 	private void OnEnable()
 	{
-		_isCollide = false;
-
-		_selfRigidbody.linearVelocity = Vector3.zero;
-		_selfRigidbody.angularVelocity = Vector3.zero;
-		transform.rotation = Quaternion.identity;
+		_tucher.ResetVelocity();
+		_tucher.Tuched += ReturnPool;
 	}
 
-	private void OnCollisionEnter(Collision collision)
+	private void OnDisable()
 	{
-		if (_isCollide)
-			return;
+		_tucher.Tuched -= ReturnPool;
+	}
 
-		_isCollide = true;
-		Tuched?.Invoke(this);
+	private void ReturnPool(Collision collision)
+	{
+		TuchedReturn?.Invoke(this);
 	}
 }

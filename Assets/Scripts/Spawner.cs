@@ -50,19 +50,19 @@ public class Spawner : MonoBehaviour
 	private void OnGetFromPool(PooledObject poolObj)
 	{
 		poolObj.transform.position = GetRandomPositionInBox();
-		poolObj.Tuched += OnPoolTuch;
+		poolObj.TuchedReturn += OnPoolTuch;
 		poolObj.gameObject.SetActive(true);
 	}
 
 	private void OnReleaseToPool(PooledObject poolObj)
 	{
-		poolObj.Tuched -= OnPoolTuch;
+		poolObj.TuchedReturn -= OnPoolTuch;
 		poolObj.gameObject.SetActive(false);
 	}
 
 	private void OnDestroyPooledObject(PooledObject poolObj)
 	{
-		poolObj.Tuched -= OnPoolTuch;
+		poolObj.TuchedReturn -= OnPoolTuch;
 		Destroy(poolObj);
 	}
 

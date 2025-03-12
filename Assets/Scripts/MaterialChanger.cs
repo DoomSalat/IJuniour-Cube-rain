@@ -1,27 +1,34 @@
 using UnityEngine;
 
-[RequireComponent(typeof(Collider), typeof(Renderer))]
+[RequireComponent(typeof(Tucher), typeof(Renderer))]
 public class MaterialChanger : MonoBehaviour
 {
-	[SerializeField] private Renderer _renderer;
 	[SerializeField] private Material _defaultMaterial;
 
-	private bool _isTuch;
+	private Tucher _tucher;
+	private Renderer _renderer;
+
+	private void Awake()
+	{
+		_tucher = GetComponent<Tucher>();
+		_renderer = GetComponent<Renderer>();
+	}
 
 	private void OnEnable()
 	{
-		_isTuch = false;
 		_renderer.material = _defaultMaterial;
+		_tucher.Tuched += OnTuchChangeMaterial;
 	}
 
-	private void OnCollisionEnter(Collision collision)
+	private void OnDisable()
 	{
-		if (_isTuch)
-			return;
+		_tucher.Tuched -= OnTuchChangeMaterial;
+	}
 
+	private void OnTuchChangeMaterial(Collision collision)
+	{
 		if (collision.gameObject.TryGetComponent(out Ground ground))
 		{
-			_isTuch = true;
 			_renderer.material = ground.GetMaterial();
 		}
 	}

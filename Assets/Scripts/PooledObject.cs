@@ -14,7 +14,6 @@ public class PooledObject : MonoBehaviour
 
 	private void OnEnable()
 	{
-		_tucher.ResetVelocity();
 		_tucher.Tuched += ReturnPool;
 	}
 

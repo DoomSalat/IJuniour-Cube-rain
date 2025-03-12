@@ -16,16 +16,15 @@ public class Tucher : MonoBehaviour
 	private void OnEnable()
 	{
 		_isCollide = false;
+
+		ResetVelocity();
 	}
 
-	public void ResetVelocity()
+	private void ResetVelocity()
 	{
-		if (_rigidbody != null)
-		{
-			_rigidbody.linearVelocity = Vector3.zero;
-			_rigidbody.angularVelocity = Vector3.zero;
-			transform.rotation = Quaternion.identity;
-		}
+		_rigidbody.linearVelocity = Vector3.zero;
+		_rigidbody.angularVelocity = Vector3.zero;
+		transform.rotation = Quaternion.identity;
 	}
 
 	private void OnCollisionEnter(Collision collision)

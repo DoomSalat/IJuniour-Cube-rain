@@ -6,7 +6,7 @@ public class PooledCube : PooledObject
 	private Rigidbody _rigidbody;
 	private FirstTouchDetector _tucher;
 
-	public delegate void ReturnAction(Vector3 position, Quaternion rotation, Rigidbody rigidbody);
+	public delegate void ReturnAction(Transform selfTransform, Rigidbody selfRigidbody);
 	public event ReturnAction StateReturned;
 
 	private void Awake()
@@ -32,6 +32,6 @@ public class PooledCube : PooledObject
 
 	public override void OnReturn()
 	{
-		StateReturned?.Invoke(transform.position, transform.rotation, _rigidbody);
+		StateReturned?.Invoke(transform, _rigidbody);
 	}
 }

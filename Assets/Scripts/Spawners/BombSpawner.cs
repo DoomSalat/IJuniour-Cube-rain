@@ -2,27 +2,25 @@ using UnityEngine;
 
 public class BombSpawner : Spawner<PooledBomb>
 {
-	private Vector3 _lastCubePosition = Vector3.zero;
-	private Quaternion _lastCubeRotation = Quaternion.identity;
+	private Transform _lastTransform;
 	private Rigidbody _lastRigidbody;
 
-	public void SetLastCubeTransform(Vector3 position, Quaternion rotation, Rigidbody rigidbody)
+	public void SetLastCubeTransform(Transform targetTransform, Rigidbody targetRigidbody)
 	{
-		_lastCubePosition = position;
-		_lastCubeRotation = rotation;
-		_lastRigidbody = rigidbody;
+		_lastTransform = targetTransform;
+		_lastRigidbody = targetRigidbody;
 
 		Pool.Get();
 	}
 
 	protected override Vector3 GetSpawnPosition()
 	{
-		return _lastCubePosition;
+		return _lastTransform.position;
 	}
 
 	protected override Quaternion GetSpawnRotation()
 	{
-		return _lastCubeRotation;
+		return _lastTransform.rotation;
 	}
 
 	protected override void OnGetFromPool(PooledBomb poolObj)

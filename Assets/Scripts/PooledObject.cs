@@ -1,29 +1,13 @@
 using UnityEngine;
 
-[RequireComponent(typeof(FirstTouchDetector))]
-public class PooledObject : MonoBehaviour
+public abstract class PooledObject : MonoBehaviour
 {
-	private FirstTouchDetector _tucher;
+	public event System.Action<PooledObject, float> StartReturned;
 
-	public event System.Action<PooledObject> TuchedReturn;
+	public virtual void OnReturn() { }
 
-	private void Awake()
+	protected virtual void ReturnToPool(float timeReturn)
 	{
-		_tucher = GetComponent<FirstTouchDetector>();
-	}
-
-	private void OnEnable()
-	{
-		_tucher.Tuched += ReturnPool;
-	}
-
-	private void OnDisable()
-	{
-		_tucher.Tuched -= ReturnPool;
-	}
-
-	private void ReturnPool(Collision collision)
-	{
-		TuchedReturn?.Invoke(this);
+		StartReturned?.Invoke(this, 0);
 	}
 }

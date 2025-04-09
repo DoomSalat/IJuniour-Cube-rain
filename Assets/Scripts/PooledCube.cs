@@ -1,15 +1,17 @@
 using UnityEngine;
 
-[RequireComponent(typeof(FirstTouchDetector))]
+[RequireComponent(typeof(FirstTouchDetector), typeof(Rigidbody))]
 public class PooledCube : PooledObject
 {
+	private Rigidbody _rigidbody;
 	private FirstTouchDetector _tucher;
 
-	public delegate void ReturnAction(Vector3 position, Quaternion rotation);
+	public delegate void ReturnAction(Vector3 position, Quaternion rotation, Rigidbody rigidbody);
 	public event ReturnAction PositionReturned;
 
 	private void Awake()
 	{
+		_rigidbody = GetComponent<Rigidbody>();
 		_tucher = GetComponent<FirstTouchDetector>();
 	}
 
@@ -30,6 +32,6 @@ public class PooledCube : PooledObject
 
 	public override void OnReturn()
 	{
-		PositionReturned?.Invoke(transform.position, transform.rotation);
+		PositionReturned?.Invoke(transform.position, transform.rotation, _rigidbody);
 	}
 }

@@ -6,7 +6,6 @@ using System.Collections;
 public abstract class Spawner<T> : MonoBehaviour where T : PooledObject
 {
 	[SerializeField] private T _prefab;
-	[Space]
 	[SerializeField] private Vector2Int _minMaxLiveTime = new Vector2Int(2, 5);
 	[SerializeField][Min(1)] private int _poolMaxSize = 10;
 
@@ -35,13 +34,16 @@ public abstract class Spawner<T> : MonoBehaviour where T : PooledObject
 			actionOnGet: OnGetFromPool,
 			actionOnRelease: OnReleaseToPool,
 			actionOnDestroy: OnDestroyPooledObject,
-			maxSize: _poolMaxSize
+			defaultCapacity: _poolMaxSize,
+			maxSize: _poolMaxSize,
+			collectionCheck: true
 		);
 	}
 
 	private T CreatePooledObject()
 	{
-		return Instantiate(_prefab);
+		T obj = Instantiate(_prefab);
+		return obj;
 	}
 
 	protected virtual void OnGetFromPool(T poolObj)
@@ -55,8 +57,14 @@ public abstract class Spawner<T> : MonoBehaviour where T : PooledObject
 		UpdateUI();
 	}
 
-	private void OnReleaseToPool(T poolObj)
+	protected virtual void OnReleaseToPool(T poolObj)
 	{
+		if (poolObj == null || poolObj.gameObject == null || !poolObj)
+		{
+			Debug.LogWarning("Attempted to release a destroyed or null object.");
+			return;
+		}
+
 		poolObj.OnReturn();
 		poolObj.StartReturned -= OnPoolReturnStartDelay;
 		poolObj.gameObject.SetActive(false);
@@ -66,8 +74,11 @@ public abstract class Spawner<T> : MonoBehaviour where T : PooledObject
 
 	private void OnDestroyPooledObject(T poolObj)
 	{
-		poolObj.StartReturned -= OnPoolReturnStartDelay;
-		Destroy(poolObj.gameObject);
+		if (poolObj != null && poolObj.gameObject != null)
+		{
+			poolObj.StartReturned -= OnPoolReturnStartDelay;
+			Destroy(poolObj.gameObject);
+		}
 	}
 
 	private void OnPoolReturnStartDelay(PooledObject poolObj, float liveTime = 0)
@@ -82,7 +93,10 @@ public abstract class Spawner<T> : MonoBehaviour where T : PooledObject
 	{
 		yield return new WaitForSeconds(time);
 
-		Pool.Release(poolObj);
+		if (poolObj != null && poolObj.gameObject != null && Pool != null)
+		{
+			Pool.Release(poolObj);
+		}
 	}
 
 	protected abstract Vector3 GetSpawnPosition();

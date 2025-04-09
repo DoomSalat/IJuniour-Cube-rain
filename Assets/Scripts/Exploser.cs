@@ -17,7 +17,5 @@ public class Exploser : MonoBehaviour
 				hitedRigidbody.AddExplosionForce(_force, transform.position, _radius);
 			}
 		}
-
-		Destroy(gameObject);
 	}
 }

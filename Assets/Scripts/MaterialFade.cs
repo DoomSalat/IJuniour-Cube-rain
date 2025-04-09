@@ -24,6 +24,11 @@ public class MaterialFade : MonoBehaviour
 		}
 	}
 
+	private void OnEnable()
+	{
+		ResetAlpha();
+	}
+
 	private void OnDestroy()
 	{
 		for (int i = 0; i < _instanceMaterials.Length; i++)

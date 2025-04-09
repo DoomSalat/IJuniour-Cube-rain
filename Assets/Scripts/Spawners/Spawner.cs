@@ -1,20 +1,15 @@
 using UnityEngine;
 using UnityEngine.Pool;
-using TMPro;
 using System.Collections;
 
-public abstract class Spawner<T> : MonoBehaviour where T : PooledObject
+public abstract class Spawner<T> : SpawnerBase where T : PooledObject
 {
 	[SerializeField] private T _prefab;
 	[SerializeField] private Vector2Int _minMaxLiveTime = new Vector2Int(2, 5);
 	[SerializeField][Min(1)] private int _poolMaxSize = 10;
 
-	[Header("UI")]
-	[SerializeField] private TextMeshProUGUI _totalSpawnedText;
-	[SerializeField] private TextMeshProUGUI _createdObjectsText;
-	[SerializeField] private TextMeshProUGUI _activeObjectsText;
-
 	protected ObjectPool<T> Pool;
+
 	private int _totalSpawned = 0;
 
 	private void Awake()
@@ -26,6 +21,35 @@ public abstract class Spawner<T> : MonoBehaviour where T : PooledObject
 	{
 		return Random.Range(_minMaxLiveTime.x, _minMaxLiveTime.y);
 	}
+
+	protected virtual void OnGetFromPool(T poolObj)
+	{
+		poolObj.transform.position = GetSpawnPosition();
+		poolObj.transform.rotation = GetSpawnRotation();
+		poolObj.StartReturned += OnPoolReturnStartDelay;
+		poolObj.gameObject.SetActive(true);
+		_totalSpawned++;
+
+		InvokeStateUpdate(_totalSpawned, Pool.CountAll, Pool.CountActive);
+	}
+
+	protected virtual void OnReleaseToPool(T poolObj)
+	{
+		if (poolObj == null || poolObj.gameObject == null || !poolObj)
+		{
+			Debug.LogWarning("Attempted to release a destroyed or null object.");
+			return;
+		}
+
+		poolObj.OnReturn();
+		poolObj.StartReturned -= OnPoolReturnStartDelay;
+		poolObj.gameObject.SetActive(false);
+
+		InvokeStateUpdate(_totalSpawned, Pool.CountAll, Pool.CountActive);
+	}
+
+	protected abstract Vector3 GetSpawnPosition();
+	protected virtual Quaternion GetSpawnRotation() => Quaternion.identity;
 
 	private void InitializePool()
 	{
@@ -46,38 +70,14 @@ public abstract class Spawner<T> : MonoBehaviour where T : PooledObject
 		return obj;
 	}
 
-	protected virtual void OnGetFromPool(T poolObj)
-	{
-		poolObj.transform.position = GetSpawnPosition();
-		poolObj.transform.rotation = GetSpawnRotation();
-		poolObj.StartReturned += OnPoolReturnStartDelay;
-		poolObj.gameObject.SetActive(true);
-		_totalSpawned++;
-
-		UpdateUI();
-	}
-
-	protected virtual void OnReleaseToPool(T poolObj)
-	{
-		if (poolObj == null || poolObj.gameObject == null || !poolObj)
-		{
-			Debug.LogWarning("Attempted to release a destroyed or null object.");
-			return;
-		}
-
-		poolObj.OnReturn();
-		poolObj.StartReturned -= OnPoolReturnStartDelay;
-		poolObj.gameObject.SetActive(false);
-
-		UpdateUI();
-	}
-
 	private void OnDestroyPooledObject(T poolObj)
 	{
 		if (poolObj != null && poolObj.gameObject != null)
 		{
 			poolObj.StartReturned -= OnPoolReturnStartDelay;
 			Destroy(poolObj.gameObject);
+
+			InvokeStateUpdate(_totalSpawned, Pool.CountAll, Pool.CountActive);
 		}
 	}
 
@@ -97,20 +97,5 @@ public abstract class Spawner<T> : MonoBehaviour where T : PooledObject
 		{
 			Pool.Release(poolObj);
 		}
-	}
-
-	protected abstract Vector3 GetSpawnPosition();
-	protected virtual Quaternion GetSpawnRotation() => Quaternion.identity;
-
-	private void UpdateUI()
-	{
-		if (_totalSpawnedText != null)
-			_totalSpawnedText.text = $"Total Spawned: {_totalSpawned}";
-
-		if (_createdObjectsText != null)
-			_createdObjectsText.text = $"Created Objects: {Pool.CountAll}";
-
-		if (_activeObjectsText != null)
-			_activeObjectsText.text = $"Active Objects: {Pool.CountActive}";
 	}
 }

@@ -25,18 +25,6 @@ public class CubeSpawner : Spawner<PooledCube>
 		cube.StateReturned -= _bombSpawner.SetLastCubeTransform;
 	}
 
-	private IEnumerator SpawnRate()
-	{
-		var rateWait = new WaitForSeconds(_rateTime);
-
-		while (true)
-		{
-			Pool.Get();
-
-			yield return rateWait;
-		}
-	}
-
 	protected override Vector3 GetSpawnPosition()
 	{
 		const float HalfSize = 0.5f;
@@ -50,5 +38,17 @@ public class CubeSpawner : Spawner<PooledCube>
 		randomLocalPosition = Vector3.Scale(randomLocalPosition, _positionBox.size);
 
 		return _positionBox.transform.TransformPoint(_positionBox.center + randomLocalPosition);
+	}
+
+	private IEnumerator SpawnRate()
+	{
+		var rateWait = new WaitForSeconds(_rateTime);
+
+		while (true)
+		{
+			Pool.Get();
+
+			yield return rateWait;
+		}
 	}
 }

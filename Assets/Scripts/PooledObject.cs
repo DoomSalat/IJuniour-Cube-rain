@@ -6,8 +6,8 @@ public abstract class PooledObject : MonoBehaviour
 
 	public virtual void OnReturn() { }
 
-	protected virtual void ReturnToPool(float timeReturn)
+	protected void ReturnToPool(float timeReturn)
 	{
-		StartReturned?.Invoke(this, 0);
+		StartReturned?.Invoke(this, timeReturn);
 	}
 }

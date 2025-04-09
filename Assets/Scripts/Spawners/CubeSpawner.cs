@@ -16,13 +16,13 @@ public class CubeSpawner : Spawner<PooledCube>
 	protected override void OnGetFromPool(PooledCube cube)
 	{
 		base.OnGetFromPool(cube);
-		cube.PositionReturned += _bombSpawner.SetLastCubeTransform;
+		cube.StateReturned += _bombSpawner.SetLastCubeTransform;
 	}
 
 	protected override void OnReleaseToPool(PooledCube cube)
 	{
 		base.OnReleaseToPool(cube);
-		cube.PositionReturned -= _bombSpawner.SetLastCubeTransform;
+		cube.StateReturned -= _bombSpawner.SetLastCubeTransform;
 	}
 
 	private IEnumerator SpawnRate()
